@@ -81,7 +81,7 @@ export default function LoginScreen() {
       console.error("Error inesperado:", err);
       const errorMessage = err.message || 'Error desconocido';
       setMessage({ 
-        text: `Error de red: ${errorMessage}. (URL: ${supabaseUrl.substring(0, 15)}...)`, 
+        text: `Error de red: ${errorMessage}. Si usas Brave o Adblock, por favor desactívalos para este sitio.`, 
         type: 'error' 
       });
     } finally {
@@ -266,6 +266,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 1,
     borderColor: 'transparent',
+    width: '100%',
   },
   messageText: {
     fontSize: 14,
