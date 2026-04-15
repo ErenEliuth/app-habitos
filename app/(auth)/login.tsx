@@ -10,6 +10,7 @@ export default function LoginScreen() {
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<'login' | 'signup'>('login');
+  const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' } | null>(null);
   const router = useRouter();
   const colorScheme = useColorScheme();
   
@@ -23,53 +24,65 @@ export default function LoginScreen() {
     textAlt: isDark ? '#aaaaaa' : '#555555',
     input: isDark ? '#2A2A2A' : '#f0f0f0',
     primary: '#10B981', 
+    error: '#EF4444',
   };
 
   const handleAuth = async () => {
+    setMessage(null);
     if (!email || !password || (!isLogin && !username)) {
-      Alert.alert('Error', 'Por favor completa todos los campos requeridos');
+      setMessage({ text: 'Por favor completa todos los campos requeridos', type: 'error' });
       return;
     }
     
     setLoading(true);
-    if (isLogin) {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+    console.log(`Intentando ${isLogin ? 'login' : 'registro'} para:`, email);
 
-      if (error) {
-        Alert.alert('Error al iniciar sesión', error.message);
+    try {
+      if (isLogin) {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) {
+          console.error("Error login:", error.message);
+          setMessage({ text: error.message, type: 'error' });
+        } else {
+          console.log("Login exitoso");
+          router.replace('/(tabs)');
+        }
       } else {
-        router.replace('/(tabs)');
-      }
-    } else {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            username: username,
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { username: username }
+          }
+        });
+
+        if (error) {
+          console.error("Error registro:", error.message);
+          setMessage({ text: error.message, type: 'error' });
+        } else {
+          console.log("Registro completado, data:", data);
+          if (data.session) {
+            setMessage({ text: '¡Éxito! Iniciando sesión...', type: 'success' });
+            setTimeout(() => router.replace('/(tabs)'), 1500);
+          } else {
+            setMessage({ 
+              text: 'Registro completado. Por favor revisa tu correo para activar tu cuenta.', 
+              type: 'success' 
+            });
+            setTimeout(() => setMode('login'), 3000);
           }
         }
-      });
-
-      if (error) {
-        Alert.alert('Error al registrarse', error.message);
-      } else {
-        if (data.session) {
-          Alert.alert('¡Éxito!', 'Cuenta creada e inicio de sesión automático.');
-          router.replace('/(tabs)');
-        } else {
-          Alert.alert(
-            'Registro completado', 
-            'Se ha enviado un correo de confirmación. Por favor revísalo para activar tu cuenta.'
-          );
-          setMode('login'); // Regresar a login para que intenten entrar después
-        }
       }
+    } catch (err: any) {
+      console.error("Error inesperado:", err);
+      setMessage({ text: 'Ocurrió un error inesperado. Inténtalo de nuevo.', type: 'error' });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -79,6 +92,20 @@ export default function LoginScreen() {
         <Text style={[styles.subtitle, { color: colors.textAlt }]}>
           {isLogin ? 'Bienvenido de nuevo' : 'Crea tu cuenta gratuita'}
         </Text>
+
+        {message && (
+          <View style={[
+            styles.messageBox, 
+            { backgroundColor: message.type === 'error' ? colors.error + '20' : colors.primary + '20' }
+          ]}>
+            <Text style={[
+              styles.messageText, 
+              { color: message.type === 'error' ? colors.error : colors.primary }
+            ]}>
+              {message.text}
+            </Text>
+          </View>
+        )}
 
         {!isLogin && (
           <>
@@ -218,5 +245,17 @@ const styles = StyleSheet.create({
   },
   toggleText: {
     fontSize: 14,
+  },
+  messageBox: {
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  messageText: {
+    fontSize: 14,
+    textAlign: 'center',
+    fontWeight: '500',
   },
 });

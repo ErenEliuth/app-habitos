@@ -33,9 +33,18 @@ Este archivo contiene el registro de cambios, errores encontrados y sus solucion
 
 ### 4. Nuevos campos en el Registro (Metadata)
 - **Cambios**:
-    - Se agregaron los campos **Nombre de Usuario** y **Tipo de Usuario** al formulario cuando el modo es `Registrarse`.
-    - Esta información se guarda automáticamente en el objeto `user_metadata` de Supabase al crear la cuenta.
-    - Se actualizó la validación para exigir estos campos solo durante el registro.
+    - Se agregó el campo **Nombre de Usuario** al formulario cuando el modo es `Registrarse`.
+    - Esta información se guarda en el objeto `user_metadata` de Supabase al crear la cuenta.
+    - Se eliminó el campo "Tipo de Usuario" por requerimiento del usuario.
+
+---
+
+### 5. Error 404 en Sub-rutas (SPA)
+- **Problema**: Al recargar la página en una ruta como `/login`, GitHub Pages devolvía un error 404.
+- **Causa**: Las aplicaciones de una sola página (SPA) no tienen archivos físicos para cada ruta. GitHub Pages no sabe que debe redirigir todo a `index.html`.
+- **Solución**:
+    - Se modificó el script `predeploy` para que copie automáticamente el `index.html` a un nuevo archivo `404.html` en la carpeta `dist`.
+    - GitHub Pages usa el archivo `404.html` como respaldo, permitiendo que el router de React tome el control de la URL.
 
 ---
 
