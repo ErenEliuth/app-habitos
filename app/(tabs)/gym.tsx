@@ -41,14 +41,15 @@ export default function GymScreen() {
       const newMachines = [...myMachines, machineName];
       setMyMachines(newMachines);
       
-      // Guardar en Supabase - Descomenta cuando pongas tu URL y KEY reales en utils/supabase.ts
-      /*
-      await supabase.from('gym_machines').upsert({
-        user_id: tempUserId,
-        machine_name: machineName,
-        is_available: true
-      }, { onConflict: 'user_id, machine_name' });
-      */
+      try {
+        await supabase.from('gym_machines').upsert({
+          user_id: tempUserId,
+          machine_name: machineName,
+          is_available: true
+        });
+      } catch (e) {
+        console.error("Error saving machine:", e);
+      }
     }
     
     if (currentIndex < MACHINES.length - 1) {
@@ -65,26 +66,27 @@ export default function GymScreen() {
     const newRoutine = await Promise.all(listToMap.map(async (m, i) => {
       let suggestedWeight = '40kg'; // Peso Base
       
-      // Lógica de Supabase bloqueada hasta que configures tus KEYS
-      /*
-      const { data } = await supabase
-        .from('gym_progress')
-        .select('actual_weight, difficulty')
-        .eq('user_id', tempUserId)
-        .eq('exercise_name', m)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
-        
-      if (data) {
-         if (data.difficulty === 'Fácil') {
-            const num = parseInt(data.actual_weight) || 40;
-            suggestedWeight = `${num + 5}kg`;
-         } else {
-            suggestedWeight = data.actual_weight; 
-         }
+      try {
+        const { data } = await supabase
+          .from('gym_progress')
+          .select('actual_weight, difficulty')
+          .eq('user_id', tempUserId)
+          .eq('exercise_name', m)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+          
+        if (data) {
+           if (data.difficulty === 'Fácil') {
+              const num = parseInt(data.actual_weight) || 40;
+              suggestedWeight = `${num + 5}kg`;
+           } else {
+              suggestedWeight = data.actual_weight; 
+           }
+        }
+      } catch (e) {
+        console.error("Error fetching progress:", e);
       }
-      */
 
       return {
         id: `e${i}`,
@@ -104,14 +106,16 @@ export default function GymScreen() {
     updated[index].difficulty = diff;
     setRoutine(updated);
 
-    /*
-    await supabase.from('gym_progress').insert({
-      user_id: tempUserId,
-      exercise_name: updated[index].name,
-      actual_weight: weight,
-      difficulty: diff
-    });
-    */
+    try {
+      await supabase.from('gym_progress').insert({
+        user_id: tempUserId,
+        exercise_name: updated[index].name,
+        actual_weight: weight,
+        difficulty: diff
+      });
+    } catch (e) {
+      console.error("Error saving progress:", e);
+    }
   };
 
   if (loading) {
