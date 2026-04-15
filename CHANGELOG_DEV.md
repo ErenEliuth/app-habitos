@@ -53,6 +53,11 @@ Este archivo contiene el registro de cambios, errores encontrados y sus solucion
     - Se agregaron `console.log` internos para rastrear el éxito o error de la operación desde la consola del navegador.
     - Se añadió un estado de "éxito" que confirma el registro y redirige o limpia el formulario automáticamente.
 
+### 7. Error "Failed to fetch" en Supabase
+- **Problema**: Al intentar registrarse, la aplicación devolvía un error de red "Failed to fetch".
+- **Causa**: Las variables de entorno (`process.env`) a veces no se inyectan correctamente en el bundle estático de la web durante el comando `expo export`. Esto dejaba la URL de Supabase como indefinida o con el valor de ejemplo.
+- **Solución**: Se integraron temporalmente las credenciales de Supabase de forma directa en `utils/supabase.ts` para asegurar que el cliente de base de datos siempre tenga la dirección correcta al ejecutarse en el navegador.
+
 ---
 
 ### 💡 Notas Técnicas Importantes

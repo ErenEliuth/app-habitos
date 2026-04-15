@@ -177,6 +177,16 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </View>
         )}
+
+        <Text style={{ 
+          color: colors.textAlt, 
+          fontSize: 10, 
+          textAlign: 'center', 
+          marginTop: 20,
+          opacity: 0.5 
+        }}>
+          v1.0.7 - {new Date().toLocaleTimeString()}
+        </Text>
       </View>
     </SafeAreaView>
   );
