@@ -31,6 +31,20 @@ Este archivo contiene el registro de cambios, errores encontrados y sus solucion
 
 ---
 
+### 4. Nuevos campos en el Registro (Metadata)
+- **Cambios**:
+    - Se agregaron los campos **Nombre de Usuario** y **Tipo de Usuario** al formulario cuando el modo es `Registrarse`.
+    - Esta información se guarda automáticamente en el objeto `user_metadata` de Supabase al crear la cuenta.
+    - Se actualizó la validación para exigir estos campos solo durante el registro.
+
+---
+
+### 💡 Notas Técnicas Importantes
+- **Caché del Navegador**: Tras un `npm run deploy`, los cambios pueden tardar de 1 a 5 minutos en reflejarse. Siempre usar `Ctrl + F5` para recargar.
+- **Confirmación de Email**: Por defecto en Supabase, los nuevos usuarios DEBEN confirmar su correo para poder iniciar sesión. Se debe revisar la bandeja de entrada tras registrarse.
+
+---
+
 ### 🚀 Reglas de Flujo de Trabajo (Workflow)
 Para asegurar que la aplicación esté siempre actualizada y funcional en producción:
 1. **Sincronización Git**: Cada cambio funcional debe ser guardado (`git add .`), confirmado (`git commit`) y subido (`git push`) al repositorio de GitHub inmediatamente.

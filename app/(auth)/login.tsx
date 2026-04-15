@@ -8,7 +8,6 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const [userType, setUserType] = useState('Personal');
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const router = useRouter();
@@ -27,7 +26,7 @@ export default function LoginScreen() {
   };
 
   const handleAuth = async () => {
-    if (!email || !password || (!isLogin && (!username || !userType))) {
+    if (!email || !password || (!isLogin && !username)) {
       Alert.alert('Error', 'Por favor completa todos los campos requeridos');
       return;
     }
@@ -51,7 +50,6 @@ export default function LoginScreen() {
         options: {
           data: {
             username: username,
-            user_type: userType,
           }
         }
       });
@@ -92,17 +90,6 @@ export default function LoginScreen() {
                 placeholderTextColor={colors.textAlt}
                 value={username}
                 onChangeText={setUsername}
-              />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={[styles.label, { color: colors.text }]}>Tipo de Usuario</Text>
-              <TextInput
-                style={[styles.input, { backgroundColor: colors.input, color: colors.text }]}
-                placeholder="Ej: Personal, Gym, Negocio"
-                placeholderTextColor={colors.textAlt}
-                value={userType}
-                onChangeText={setUserType}
               />
             </View>
           </>
