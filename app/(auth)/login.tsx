@@ -7,6 +7,8 @@ import { useColorScheme } from '@/components/useColorScheme';
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [userType, setUserType] = useState('Personal');
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const router = useRouter();
@@ -25,8 +27,8 @@ export default function LoginScreen() {
   };
 
   const handleAuth = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Por favor ingresa tu correo y contraseña');
+    if (!email || !password || (!isLogin && (!username || !userType))) {
+      Alert.alert('Error', 'Por favor completa todos los campos requeridos');
       return;
     }
     
@@ -46,6 +48,12 @@ export default function LoginScreen() {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            username: username,
+            user_type: userType,
+          }
+        }
       });
 
       if (error) {
@@ -73,6 +81,32 @@ export default function LoginScreen() {
         <Text style={[styles.subtitle, { color: colors.textAlt }]}>
           {isLogin ? 'Bienvenido de nuevo' : 'Crea tu cuenta gratuita'}
         </Text>
+
+        {!isLogin && (
+          <>
+            <View style={styles.inputContainer}>
+              <Text style={[styles.label, { color: colors.text }]}>Nombre de Usuario</Text>
+              <TextInput
+                style={[styles.input, { backgroundColor: colors.input, color: colors.text }]}
+                placeholder="Nombre completo o alias"
+                placeholderTextColor={colors.textAlt}
+                value={username}
+                onChangeText={setUsername}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={[styles.label, { color: colors.text }]}>Tipo de Usuario</Text>
+              <TextInput
+                style={[styles.input, { backgroundColor: colors.input, color: colors.text }]}
+                placeholder="Ej: Personal, Gym, Negocio"
+                placeholderTextColor={colors.textAlt}
+                value={userType}
+                onChangeText={setUserType}
+              />
+            </View>
+          </>
+        )}
 
         <View style={styles.inputContainer}>
           <Text style={[styles.label, { color: colors.text }]}>Correo electrónico</Text>
