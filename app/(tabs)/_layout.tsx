@@ -1,9 +1,20 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
-import { Tabs } from 'expo-router';
+import { Tabs, Redirect } from 'expo-router';
+import { useAuth } from '@/utils/auth';
 
 export default function TabLayout() {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return null; // Or a loading spinner
+  }
+
+  if (!user) {
+    return <Redirect href="/(auth)/login" />;
+  }
+
   return (
     <Tabs
       screenOptions={{
