@@ -46,6 +46,13 @@ Este archivo contiene el registro de cambios, errores encontrados y sus solucion
     - Se modificó el script `predeploy` para que copie automáticamente el `index.html` a un nuevo archivo `404.html` en la carpeta `dist`.
     - GitHub Pages usa el archivo `404.html` como respaldo, permitiendo que el router de React tome el control de la URL.
 
+### 6. Feedback Visual en Autenticación
+- **Problema**: El despliegue en web a veces silenciaba los errores o advertencias (Alert.alert podía fallar o ser ignorado). El usuario no sabía si el registro fue exitoso.
+- **Solución**:
+    - Se reemplazaron los `Alert.alert` por un componente de **Mensaje Visual** integrado en la UI (MessageBox).
+    - Se agregaron `console.log` internos para rastrear el éxito o error de la operación desde la consola del navegador.
+    - Se añadió un estado de "éxito" que confirma el registro y redirige o limpia el formulario automáticamente.
+
 ---
 
 ### 💡 Notas Técnicas Importantes

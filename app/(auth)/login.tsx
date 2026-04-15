@@ -79,7 +79,11 @@ export default function LoginScreen() {
       }
     } catch (err: any) {
       console.error("Error inesperado:", err);
-      setMessage({ text: 'Ocurrió un error inesperado. Inténtalo de nuevo.', type: 'error' });
+      const errorMessage = err.message || 'Error desconocido';
+      setMessage({ 
+        text: `Error de red: ${errorMessage}. (URL: ${supabaseUrl.substring(0, 15)}...)`, 
+        type: 'error' 
+      });
     } finally {
       setLoading(false);
     }
