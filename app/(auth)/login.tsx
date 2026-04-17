@@ -45,11 +45,16 @@ export default function LoginScreen() {
         });
 
         if (error) {
-          console.error("Error login:", error.message);
-          setMessage({ text: error.message, type: 'error' });
+          console.error("Error login detalle:", error);
+          let userMsg = error.message;
+          if (userMsg === 'Failed to fetch') {
+            userMsg = 'Error de conexión: No se pudo contactar con Supabase. Verifica tu SUPABASE_URL y SUPABASE_ANON_KEY.';
+          }
+          setMessage({ text: userMsg, type: 'error' });
         } else {
-          console.log("Login exitoso");
-          router.replace('/(tabs)');
+          console.log("Login exitoso, sesión:", data.session ? "OK" : "Sin sesión");
+          setMessage({ text: 'Acceso concedido. Entrando...', type: 'success' });
+          setTimeout(() => router.replace('/(tabs)'), 1000);
         }
       } else {
         const { data, error } = await supabase.auth.signUp({
@@ -61,12 +66,12 @@ export default function LoginScreen() {
         });
 
         if (error) {
-          console.error("Error registro:", error.message);
+          console.error("Error registro detalle:", error);
           setMessage({ text: error.message, type: 'error' });
         } else {
           console.log("Registro completado, data:", data);
           if (data.session) {
-            setMessage({ text: '¡Éxito! Iniciando sesión...', type: 'success' });
+            setMessage({ text: '¡Cuenta creada! Iniciando sesión...', type: 'success' });
             setTimeout(() => router.replace('/(tabs)'), 1500);
           } else {
             setMessage({ 
@@ -78,10 +83,9 @@ export default function LoginScreen() {
         }
       }
     } catch (err: any) {
-      console.error("Error inesperado:", err);
-      const errorMessage = err.message || 'Error desconocido';
+      console.error("Error crítico en handleAuth:", err);
       setMessage({ 
-        text: `Error de red: ${errorMessage}. Si usas Brave o Adblock, por favor desactívalos para este sitio.`, 
+        text: `Error de sistema: ${err.message || 'Error desconocido'}. Revisa la configuración de Supabase en utils/supabase.ts`, 
         type: 'error' 
       });
     } finally {
